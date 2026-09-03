@@ -1,5 +1,5 @@
 # AgentBIT MCP Server
-
+[![smithery badge](https://smithery.ai/badge/alexutz6/agentbit)](https://smithery.ai/servers/alexutz6/agentbit)
 **Paid x402 tools over MCP — pay-per-call in USDC on Base. No accounts, no API keys.**
 
 AgentBIT ([agentbit.app](https://agentbit.app)) is a marketplace of paid API tools for AI agents, built on the [x402 payment protocol](https://x402.org). This MCP server exposes the full catalog to any MCP-compatible client (Claude, Cursor, LangChain, custom agents). Payment **is** the authentication: your agent signs a USDC authorization per call — nothing to sign up for.
