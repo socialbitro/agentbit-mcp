@@ -1,82 +1,80 @@
 # AgentBIT MCP Server
-[![smithery badge](https://smithery.ai/badge/alexutz6/agentbit)](https://smithery.ai/servers/alexutz6/agentbit)
-**Paid x402 tools over MCP — pay-per-call in USDC on Base. No accounts, no API keys.**
 
-AgentBIT ([agentbit.app](https://agentbit.app)) is a marketplace of paid API tools for AI agents, built on the [x402 payment protocol](https://x402.org). This MCP server exposes the full catalog to any MCP-compatible client (Claude, Cursor, LangChain, custom agents). Payment **is** the authentication: your agent signs a USDC authorization per call — nothing to sign up for.
+**Remote MCP server** exposing 28+ pay-per-call API tools for AI agents — paid per request with USDC on Base via the [x402 protocol](https://www.x402.org) (no accounts, no API keys, no subscriptions). First call is free for new wallets on most tools.
 
 - **Endpoint:** `https://agentbit.app/mcp` (Streamable HTTP, JSON-RPC 2.0)
-- **Network:** Base mainnet (`eip155:8453`), USDC
-- **Pricing:** per-call, from $0.001 — first call free for new wallets on tools ≤ $0.02
-- **Volume discounts:** −10% at 100+ calls/30d, −20% at 1000+
-- **Catalog:** [catalog.json](https://agentbit.app/catalog.json) · [OpenAPI](https://agentbit.app/openapi.json) · [llms.txt](https://agentbit.app/llms.txt)
+- **Website / live catalog:** [agentbit.app](https://agentbit.app) · [catalog.json](https://agentbit.app/catalog.json) · [llms.txt](https://agentbit.app/llms.txt)
+- **Integrations guide:** [agentbit.app/integrations](https://agentbit.app/integrations)
+- **Buyer SDK (npm):** [`x402-fetch-pay`](https://www.npmjs.com/package/x402-fetch-pay)
 
-## Tools
+## Connect
 
-| Tool | Description | Price (USDC) |
-|------|-------------|--------------|
-| `agentbit.util_transform` | Deterministic utilities: hashing, HMAC, JWT decode, base64, UUID, JSON/CSV/XML transforms, semver | $0.001 |
-| `agentbit.business_identity` | LEI lookup, legal-entity search and LEI validation via GLEIF — KYB & compliance | $0.003 |
-| `agentbit.fx` | Live FX rates for one or many pairs, ECB-derived, with bid/ask and confidence | $0.005 |
-| `agentbit.web_extract` | Fetch any URL → clean structured content: title, main text, markdown, headings, links | $0.005 |
-| `agentbit.web_search` | Live web search with ranked results: title, URL, snippet, date, source | $0.015 |
-| `agentbit.reddit_search` | Search Reddit posts by keyword/subreddit — sentiment & trend research | $0.02 |
-| `agentbit.x402_intelligence` | x402 market analytics: search, trending, seller reports, price history, market overview | $0.02 |
-| `agentbit.financial_document` | IBAN validation & repair, EU VAT format validation — deterministic, instant | $0.02 |
-| `agentbit.email_deliverability` | Email deliverability & risk: MX, SPF, DMARC, disposable/role detection, 0–100 score | $0.03 |
-| `agentbit.counterparty_risk` | Pre-transaction risk screening: DNS, MX, SSL, domain age, reachability, 0–100 score | $0.05 |
-| `agentbit.website_agent_readiness` | Audit a site for AI-agent readiness: robots.txt AI rules, llms.txt, schema.org, security headers | $0.05 |
-| `agentbit.company_enrich` | Company enrichment from a domain: name, technologies, socials, mail infrastructure | $0.10 |
-| `agentbit.company_research` | One-call due-diligence dossier: enrichment + news + agent-readiness + risk indicators | $0.10 |
+Claude Desktop / any MCP client with remote server support:
 
-First call free for new wallets on tools priced ≤ $0.02. Volume discounts: −10% at 100+ calls/30d, −20% at 1000+. Reliability stats (success rate, p50/p95 latency, 30-day window) are published per tool in [catalog.json](https://agentbit.app/catalog.json).
-
-## Quick start
-
-### Claude Code
-```bash
-claude mcp add --transport http agentbit https://agentbit.app/mcp
-```
-
-### Cursor / other Streamable HTTP clients
 ```json
 {
   "mcpServers": {
     "agentbit": {
-      "type": "http",
+      "type": "streamable-http",
       "url": "https://agentbit.app/mcp"
     }
   }
 }
 ```
 
-### stdio-only clients (via mcp-remote)
-```json
-{
-  "mcpServers": {
-    "agentbit": {
-      "command": "npx",
-      "args": ["mcp-remote", "https://agentbit.app/mcp"]
-    }
-  }
-}
-```
+`tools/list` works immediately. The `agentbit_discover` operation is **free** — search 7,000+ indexed x402 resources across the ecosystem without paying anything.
 
 ## How payment works
 
-1. Call any tool via `tools/call` **without** payment → the response returns the x402 payment requirements as `structuredContent` (amount, USDC contract, pay-to address, validity window). Nothing is charged.
-2. Sign an [EIP-3009](https://eips.ethereum.org/EIPS/eip-3009) `TransferWithAuthorization` for the quoted amount (any x402 client library works — e.g. [`x402-fetch-pay`](https://www.npmjs.com/package/x402-fetch-pay)).
-3. Retry the same `tools/call` with the extra argument `_payment` — the base64-encoded x402 `PAYMENT-SIGNATURE` payload.
-4. The server verifies and settles via the Coinbase CDP facilitator and returns the tool result, with settlement details echoed back.
+Paid tools follow x402 v2: call a tool without payment and the response returns the exact payment requirements (price in USDC atomic units, network `eip155:8453`, pay-to address) as structured content. Sign an EIP-3009 USDC authorization with your agent's wallet and retry with the `_payment` argument — settlement is gasless for the buyer and runs through the Coinbase CDP facilitator. The [`x402-fetch-pay`](https://www.npmjs.com/package/x402-fetch-pay) npm package does the whole loop in one call.
 
-Free discovery endpoints (no payment): [`/api/discover`](https://agentbit.app/api/discover) — aggregated search across 7,000+ indexed x402 resources (Bazaar, Agent402, agentic.market).
+- Prices per call: **$0.001 – $0.10 USDC**
+- **First call free** for brand-new wallets (tools priced ≤ $0.02)
+- Volume discounts advertised in every 402 envelope (100 calls/30d → −10%, 1000 → −20%)
+- Per-tool reliability stats (success rate, p50/p95 latency) published in the catalog
 
-## Links
+## Tools
 
-- Website & docs: [agentbit.app](https://agentbit.app) · [Integrations guide](https://agentbit.app/integrations)
-- Blog (x402 engineering notes): [agentbit.app/blog](https://agentbit.app/blog)
-- Buyer SDK: [`x402-fetch-pay`](https://www.npmjs.com/package/x402-fetch-pay)
-- Registry name: `app.agentbit/mcp`
+| Tool | Price | What it does |
+|---|---|---|
+| `web-search` | $0.015 | Live web search: ranked results with title, URL, snippet, date |
+| `web-extract` | $0.005 | Fetch a URL → clean text, markdown and links |
+| `structured-extract` | $0.01 | JSON-LD / OpenGraph / Twitter Card metadata from any page |
+| `feed-read` | $0.005 | Any RSS/Atom feed → normalized JSON (auto-discovery from HTML) |
+| `wiki-facts` | $0.005 | Wikipedia search + summary in 300+ languages |
+| `paper-search` | $0.01 | Academic search across OpenAlex, Crossref, arXiv with OA PDF links |
+| `reddit-search` | $0.02 | Search Reddit posts by keyword |
+| `company-enrich` | $0.10 | Company data from a domain: name, tech stack, socials |
+| `company-research` | $0.10 | One-call due-diligence dossier |
+| `business-identity` | $0.003 | Legal entity lookup via GLEIF (LEI) |
+| `email-deliverability` | $0.03 | Syntax, MX, SPF, DMARC, disposable detection |
+| `counterparty-risk` | $0.05 | Domain/company/email risk screening (DNS, SSL, reachability) |
+| `domain-intel` | $0.02 | RDAP registry intel: age, registrar, expiry, risk flags |
+| `dns-inspect` | $0.01 | Full DNS records + email-posture analysis (SPF/DMARC policies) |
+| `ip-intel` | $0.01 | ASN, network holder, prefix, country, abuse contact (RIPEstat) |
+| `url-threat-check` | $0.01 | Phishing heuristics + safe redirect trace + malware DB lookup |
+| `endpoint-monitor` | $0.005 | Health probe: status, latency, TLS expiry, security headers |
+| `sanctions-screen` | $0.02 | Name screening vs OFAC SDN + UN lists (refreshed daily) |
+| `wallet-screen` | $0.02 | Wallet address screening: sanctions + on-chain risk signals |
+| `token-risk` | $0.02 | ERC-20 audit on Base: verification, owner, holder concentration |
+| `vat-check` | $0.02 | LIVE EU VAT validation via VIES (official EC service) |
+| `financial-document` | $0.02 | IBAN validation + repair, EU VAT format checks |
+| `fx` | $0.005 | Live foreign-exchange rates |
+| `util-transform` | $0.001 | Hashing, JWT decode, base64, UUID, JSON/CSV/XML transforms |
+| `website-agent-readiness` | $0.05 | Audit a site for AI-agent readiness (robots.txt, llms.txt…) |
+| `x402-intelligence` | $0.02 | Market analytics for the x402 ecosystem |
+| `discover` | $0.001 | Search 7k+ indexed x402 resources with usage metrics |
+| `x402-inspect` | $0.001 | Lint any x402 endpoint/payment header against the v2 spec |
 
-## License
+Full, always-current list with schemas: [`catalog.json`](https://agentbit.app/catalog.json).
 
-MIT — this repository contains documentation and metadata for the hosted AgentBIT MCP server.
+## Also available as plain HTTP
+
+Every tool is a REST endpoint under `https://agentbit.app/v1/...` speaking x402 v2 directly — indexed in Coinbase Bazaar, Agent402, x402 Arena and other x402 discovery services. The MCP server and the REST API are the same catalog.
+
+## Engineering notes
+
+Real-world x402 integration write-ups on the [AgentBIT blog](https://agentbit.app/blog): the EIP-712 domain-name trap, CDP JWT signing with Ed25519 in PHP, debugging Bazaar's extensions echo.
+
+---
+Maintained by [AgentBIT](https://agentbit.app). This repository documents the remote server; the service itself runs at `agentbit.app`.
