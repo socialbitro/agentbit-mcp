@@ -2,14 +2,17 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "app.agentbit/mcp",
   "title": "AgentBIT",
-  "description": "Paid x402 tools over MCP: search, FX, LEI, company research, risk. Pay-per-call USDC on Base.",
-  "version": "1.0.0",
+  "description": "Pay-per-call x402 tools for AI agents: web, onchain, risk, finance & prediction data on Base.",
+  "version": "1.1.0",
   "websiteUrl": "https://agentbit.app",
   "repository": {
     "url": "https://github.com/socialbitro/agentbit-mcp",
     "source": "github"
   },
   "remotes": [
-    { "type": "streamable-http", "url": "https://agentbit.app/mcp" }
+    {
+      "type": "streamable-http",
+      "url": "https://agentbit.app/mcp"
+    }
   ]
 }
