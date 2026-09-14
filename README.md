@@ -1,5 +1,7 @@
 # AgentBIT MCP Server
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/socialbitro-agentbit-mcp-12dynb?v=093e93c481526075fdbbbbb22382ff85&variant=verified)](https://m8ven.ai/mcp/socialbitro-agentbit-mcp-12dynb)
+
 **Remote MCP server** exposing **50+ pay-per-call API tools** for AI agents — paid per request with USDC on Base via the [x402 protocol](https://www.x402.org) (no accounts, no API keys, no subscriptions). First call is free for new wallets on most tools, and a couple of high-frequency tools are **completely free**.
 
 - **Endpoint:** `https://agentbit.app/mcp` (Streamable HTTP, JSON-RPC 2.0)
