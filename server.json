@@ -2,12 +2,12 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "app.agentbit/mcp",
   "title": "AgentBIT",
-  "description": "Pay-per-call x402 tools for AI agents: onchain, finance, risk, content, web & SEC data on Base.",
+  "description": "x402 router + 90+ keyless pay-per-call tools for AI agents (web, data, AI, finance, on-chain) on Base. No signup, no keys — pay once, we run the best tool.",
   "repository": {
     "url": "https://github.com/socialbitro/agentbit-mcp",
     "source": "github"
   },
-  "version": "1.2.0",
+  "version": "1.3.0",
   "websiteUrl": "https://agentbit.app",
   "remotes": [
     {
@@ -20,7 +20,7 @@
       "protocol": "x402",
       "network": "eip155:8453",
       "asset": "USDC",
-      "tools": 79,
+      "tools": 98,
       "pricing": "pay-per-call, no signup",
       "freeTools": "onchain gas heartbeat + server time + agentbit_discover router",
       "catalog": "https://agentbit.app/catalog.json",
